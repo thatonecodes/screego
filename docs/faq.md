@@ -15,3 +15,10 @@ Sometimes you want to reuse the screego room, but always have to recreate it.
 By passing `create=true` in the url, you can automatically create the room if it does not exist.
 
 Example: https://app.screego.net/?room=not-existing-room&create=true
+
+## Automatically add username on join
+
+To include a username when someone joins a room (useful for invitation links), add the `name` parameter to the URL.
+This sets the username to _Alex_ when the user joins the room.
+
+Example: https://app.screego.net/?room=my-room&name=Alex

@@ -16,9 +16,11 @@ import {UIConfig} from './message';
 import {getRoomFromURL} from './useRoomID';
 import {authModeToRoomMode, UseConfig} from './useConfig';
 import {LoginForm} from './LoginForm';
+import {useName} from './useName';
 
 const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & {config: UIConfig}) => {
     const [id, setId] = React.useState(() => getRoomFromURL() ?? config.roomName);
+    const [username] = useName();
     const mode = authModeToRoomMode(config.authMode, config.loggedIn);
     const [ownerLeave, setOwnerLeave] = React.useState(config.closeRoomWhenOwnerLeaves);
     const submit = () =>
@@ -29,6 +31,7 @@ const CreateRoom = ({room, config}: Pick<UseRoom, 'room'> & {config: UIConfig}) 
                 closeOnOwnerLeave: ownerLeave,
                 joinIfExist: true,
                 id: id || undefined,
+                ...(username !== undefined && {username}),
             },
         });
     return (

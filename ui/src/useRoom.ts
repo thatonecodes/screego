@@ -14,6 +14,7 @@ import {loadSettings, resolveCodecPlaceholder} from './settings';
 import {urlWithSlash} from './url';
 import {authModeToRoomMode} from './useConfig';
 import {getFromURL, useRoomID} from './useRoomID';
+import {useName} from './useName';
 
 export type RoomState = false | ConnectedRoom;
 export type ConnectedRoom = {
@@ -156,6 +157,7 @@ export type FCreateRoom = (room: RoomCreate | JoinRoom) => Promise<void>;
 
 export const useRoom = (config: UIConfig): UseRoom => {
     const [roomID, setRoomID] = useRoomID();
+    const [username, setUsername] = useName();
     const {enqueueSnackbar} = useSnackbar();
     const conn = React.useRef<WebSocket | undefined>(undefined);
     const host = React.useRef<Record<string, RTCPeerConnection>>({});
@@ -306,12 +308,12 @@ export const useRoom = (config: UIConfig): UseRoom => {
                     setState(false);
                 };
                 ws.onopen = () => {
-                    create.payload.username = loadSettings().name;
+                    create.payload.username = username || loadSettings().name;
                     send(create);
                 };
             });
         },
-        [setState, enqueueSnackbar, setRoomID]
+        [setState, enqueueSnackbar, setRoomID, username]
     );
 
     const share = async () => {
@@ -361,6 +363,7 @@ export const useRoom = (config: UIConfig): UseRoom => {
 
     const setName = (name: string): void => {
         conn.current?.send(JSON.stringify({type: 'name', payload: {username: name}}));
+        setUsername(name);
     };
 
     React.useEffect(() => {
@@ -379,6 +382,7 @@ export const useRoom = (config: UIConfig): UseRoom => {
                         closeOnOwnerLeave,
                         id: roomID,
                         mode: authModeToRoomMode(config.authMode, config.loggedIn),
+                        ...(username !== undefined && {username}),
                     },
                 });
             } else {

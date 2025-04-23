@@ -13,6 +13,7 @@ import {useSnackbar} from 'notistack';
 import {RoomUser} from './message';
 import {useSettings, VideoDisplayMode} from './settings';
 import {SettingDialog} from './SettingDialog';
+import {useName} from './useName';
 
 const HostStream: unique symbol = Symbol('mystream');
 
@@ -107,6 +108,14 @@ export const Room = ({
             (err) => enqueueSnackbar('Copy Failed ' + err, {variant: 'error'})
         );
     };
+
+    const [username] = useName();
+
+    React.useEffect(() => {
+        if (username) {
+            setName(username);
+        }
+    }, [username, setName]);
 
     const setHoverState = React.useMemo(
         () => ({

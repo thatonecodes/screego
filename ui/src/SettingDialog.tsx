@@ -19,6 +19,7 @@ import {
     VideoDisplayMode,
 } from './settings';
 import {NumberField} from './NumberField';
+import {useName} from './useName';
 
 export interface SettingDialogProps {
     open: boolean;
@@ -37,7 +38,11 @@ const getAvailableCodecs = (): PreferredCodec[] => {
 const NativeCodecs = getAvailableCodecs();
 
 export const SettingDialog = ({open, setOpen, updateName, saveSettings}: SettingDialogProps) => {
-    const [settingsInput, setSettingsInput] = React.useState(loadSettings);
+    const [username] = useName();
+    const [settingsInput, setSettingsInput] = React.useState(() => {
+        const base = loadSettings();
+        return {...base, name: username ?? base.name};
+    });
 
     const doSubmit = () => {
         saveSettings(settingsInput);
